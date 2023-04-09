@@ -8,7 +8,12 @@ type (
 	InvalidParanthesisStructure struct {}
 	UnexpectedError struct {}
 	UndefinedVariable struct {}
+	TooMuchEqualsSign struct {}
 )
+
+func (e TooMuchEqualsSign) Error() string {
+	return "Too much equals sign"
+}
 
 func (e EndOfString) Error() string {
 	return "End of the string"

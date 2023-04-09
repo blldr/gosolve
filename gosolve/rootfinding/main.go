@@ -2,13 +2,18 @@ package main
 
 import (
 	"fmt"
-
+	"os"
 )
 
 func main() {
-	roots, err := FindRoots("y + 6", -10, 0, 0.1, 0.01)
+	args := os.Args
+	if len(args) != 2 {
+		os.Exit(1)
+	}
+	roots, err := FindRoots(args[1], -5, 5, 'y')
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(1)
 	}
-	fmt.Println(roots)
+	fmt.Println("roots:",roots)
 }
