@@ -108,7 +108,7 @@ func findRoots(eq stack.Stack[string], iStart float64, iEnd float64, variableNam
 				continue
 			}
 			if d == b {
-				roots = append(roots, roundFloat( b - epsilon,2))
+				roots = append(roots, roundFloat( b,2))
 				a = b
 				b = a + resolution
 			}
