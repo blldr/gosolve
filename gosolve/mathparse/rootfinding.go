@@ -95,14 +95,14 @@ func findRoots(eq stack.Stack[string], iStart float64, iEnd float64, variableNam
 			}
 			fd = roundFloat(fd, 2)
 			if math.Abs(fd - 0) < epsilon {
-				roots = append(roots, d)
+				// roots = append(roots, d)
 				a = b
 				b = a + resolution
 				continue
 			}
 			fmt.Println(a, b, d)
 			if d == a {
-				roots = append(roots, roundFloat(a + epsilon,2))
+				// roots = append(roots, roundFloat(a + epsilon,2))
 				a = b
 				b = a + resolution
 				continue
