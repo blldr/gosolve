@@ -8,8 +8,8 @@ import (
 	"github.com/blldr/freshgoutils/stack"
 )
 
-func FindRoots(text string, iStart float64, iEnd float64, variableName rune)  ([]float64, error) {
-	eqs := strings.Split(text, "=") 
+func FindRoots(text string, iStart float64, iEnd float64, variableName rune) ([]float64, error) {
+	eqs := strings.Split(text, "=")
 	eqLen := len(eqs)
 	if eqLen > 2 {
 		return []float64{}, TooMuchEqualsSign{}
@@ -36,10 +36,10 @@ func FindRoots(text string, iStart float64, iEnd float64, variableName rune)  ([
 	tmpStack := stack.NewStack[string]()
 	eq1Len := eq1.Length()
 	eq2Len := eq2.Length()
-	for i := 0; i < eq1Len; i++{
+	for i := 0; i < eq1Len; i++ {
 		tmpStack.Push(*eq1.Pop())
 	}
-	for i := 0; i < eq2Len; i++{
+	for i := 0; i < eq2Len; i++ {
 		tmpStack.Push(*eq2.Pop())
 	}
 	eqStack := stack.NewStack[string]()
@@ -48,37 +48,37 @@ func FindRoots(text string, iStart float64, iEnd float64, variableName rune)  ([
 	for i := 0; i < tmpLen; i++ {
 		eqStack.Push(*tmpStack.Pop())
 	}
-	roots, err := findRoots(*eqStack, iStart, iEnd, 'y')
+	roots, err := findRoots(*eqStack, iStart, iEnd, variableName)
 	return roots, nil
-	
+
 }
 
 func findRoots(eq stack.Stack[string], iStart float64, iEnd float64, variableName rune) ([]float64, error) {
 	epsilon := 0.1
 	resolution := 0.2
 	roots := make([]float64, 0, 10)
-	a, b := iStart, iStart + resolution
-	for ; a <= iEnd;  {
+	a, b := iStart, iStart+resolution
+	for a <= iEnd {
 		a = roundFloat(a, 2)
 		b = roundFloat(b, 2)
-		fa, err := EvalExpression(eq, map[rune]float64{variableName:a})
+		fa, err := EvalExpression(eq, map[rune]float64{variableName: a})
 		if err != nil {
 			return nil, err
 		}
 		fa = roundFloat(fa, 2)
-		fb, err := EvalExpression(eq, map[rune]float64{variableName:b})
+		fb, err := EvalExpression(eq, map[rune]float64{variableName: b})
 		if err != nil {
 			return nil, err
 		}
 		fb = roundFloat(fb, 2)
 		if fb == 0 {
 			roots = append(roots, b)
-			a = b 
+			a = b
 			b = a + resolution
 			continue
 		}
 
-		if fa * fb < 0 {
+		if fa*fb < 0 {
 			absFA := math.Abs(fa)
 			absFB := math.Abs(fb)
 			interval := b - a
@@ -88,13 +88,13 @@ func findRoots(eq stack.Stack[string], iStart float64, iEnd float64, variableNam
 			} else {
 				tan = false
 			}
-			d := roundFloat(b - absFB / (absFA + absFB) * interval, 2)
+			d := roundFloat(b-absFB/(absFA+absFB)*interval, 2)
 			fd, err := EvalExpression(eq, map[rune]float64{variableName: d})
 			if err != nil {
 				return nil, err
 			}
 			fd = roundFloat(fd, 2)
-			if math.Abs(fd - 0) < epsilon {
+			if math.Abs(fd-0) < epsilon {
 				roots = append(roots, roundFloat(d, 2))
 				a = b
 				b = a + resolution
@@ -102,13 +102,13 @@ func findRoots(eq stack.Stack[string], iStart float64, iEnd float64, variableNam
 			}
 			fmt.Println(a, b, d)
 			if d == a {
-				roots = append(roots, roundFloat(a,2))
+				roots = append(roots, roundFloat(a, 2))
 				a = b
 				b = a + resolution
 				continue
 			}
 			if d == b {
-				roots = append(roots, roundFloat( b,2))
+				roots = append(roots, roundFloat(b, 2))
 				a = b
 				b = a + resolution
 			}
@@ -135,6 +135,6 @@ func findRoots(eq stack.Stack[string], iStart float64, iEnd float64, variableNam
 	return roots, nil
 }
 
-func roundFloat(f float64, precission int) float64{
-	return math.Round(f * math.Pow10(precission)) / math.Pow10(precission)
+func roundFloat(f float64, precission int) float64 {
+	return math.Round(f*math.Pow10(precission)) / math.Pow10(precission)
 }
