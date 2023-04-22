@@ -84,21 +84,19 @@ func findRoots(eq stack.Stack[string], iStart float64, iEnd float64, variableNam
 			absFA := math.Abs(fa)
 			absFB := math.Abs(fb)
 			interval := b - a
-			var tan bool
-			if fa < fb {
-				tan = true
-			} else {
-				tan = false
+			var tan float64
+			tan = (absFB + absFA) / (b - a)
+			if fa > fb {
+				tan = -tan
 			}
 			var d float64
-			if tan {
+			if tan > 0 {
 				d = b - absFB/(absFA+absFB)*interval
 			} else {
 				d = a + absFA/(absFA+absFB)*interval
 			}
-			d = roundFloat(d, 4)
+			d = roundFloat(d, 3)
 			fd, err := EvalExpression(eq, map[rune]float64{variableName: d})
-			fd = roundFloat(fd, 2)
 			if err != nil {
 				return nil, err
 			}
@@ -110,25 +108,30 @@ func findRoots(eq stack.Stack[string], iStart float64, iEnd float64, variableNam
 			}
 
 			if d == a {
-				roots = append(roots, roundFloat(a, 2))
+				if !(math.Abs(0-tan) > 9000) {
+					roots = append(roots, roundFloat(d, 2))
+				}
 				a = b
 				b = a + resolution
 				continue
 			}
 			if d == b {
-				roots = append(roots, roundFloat(b, 2))
+				if !(math.Abs(0-tan) > 9000) {
+					roots = append(roots, roundFloat(d, 2))
+				}
 				a = b
 				b = a + resolution
+				continue
 			}
 
 			if fd > 0 {
-				if tan {
+				if tan > 0 {
 					b = d
 					continue
 				}
 				a = d
 			} else {
-				if tan {
+				if tan > 0 {
 					a = d
 					continue
 				}
